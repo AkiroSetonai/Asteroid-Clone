@@ -15,7 +15,9 @@ const ship = {
   thrust: false,
   vx: 0,
   vy: 0,
-  speed: 0.7,
+  speed: 0.5,
+  maxSpeed: 3,
+  friction: 0.02,
 };
 
 function drawShip() {
@@ -34,6 +36,8 @@ function drawShip() {
     ship.x - ship.radius * (Math.cos(ship.angle) - Math.sin(ship.angle)),
     ship.y + ship.radius * (Math.sin(ship.angle) + Math.cos(ship.angle))
   );
+  ctx.closePath();
+  ctx.stroke();
 
   if (ship.thrust) {
     ctx.beginPath();
@@ -46,8 +50,21 @@ function drawShip() {
       ship.y + ship.radius * (Math.sin(ship.angle) * 1.5)
     );
   }
-  ctx.closePath();
   ctx.stroke();
+
+  if (ship.thrust) {
+    ship.vx += Math.cos(ship.angle) * ship.speed;
+    ship.vy -= Math.sin(ship.angle) * ship.speed;
+
+    const currentSpeed = Math.sqrt(ship.vx * ship.vx + ship.vy * ship.vy);
+    if (currentSpeed > ship.maxSpeed) {
+      ship.vx = (ship.vx / currentSpeed) * ship.maxSpeed;
+      ship.vy = (ship.vy / currentSpeed) * ship.maxSpeed;
+    }
+  }
+
+  ship.vx *= 1 - ship.friction;
+  ship.vy *= 1 - ship.friction;
 }
 
 function gameLoop() {
