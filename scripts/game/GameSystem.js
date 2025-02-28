@@ -4,6 +4,7 @@ import { BulletManager } from "../components/BulletManager.js";
 import { AsteroidManager } from "../components/AsteroidManager.js";
 import { Config } from "../config.js";
 import { Helpers } from "../utils/helpers.js";
+import { ScoreManager } from "../components/ScoreManager.js";
 
 function createFragment(parentAsteroid, newSize) {
   return {
@@ -24,6 +25,7 @@ export const GameSystem = {
     GameElements.init();
     Ship.init();
     AsteroidManager.init();
+    ScoreManager.init();
     this.loop();
   },
 
@@ -40,6 +42,8 @@ export const GameSystem = {
       AsteroidManager.asteroids.forEach((asteroid, asteroidIndex) => {
         if (Helpers.checkCollision(bullet, asteroid)) {
           BulletManager.bullets.splice(bulletIndex, 1);
+
+          ScoreManager.addPoints(Config.POINTS_PER_ASTEROID);
 
           if (asteroid.size > 1) {
             let newSize = asteroid.size - 1;
@@ -58,6 +62,7 @@ export const GameSystem = {
       }
     });
 
+    ScoreManager.draw();
     Ship.update();
     Ship.draw();
     BulletManager.update();
