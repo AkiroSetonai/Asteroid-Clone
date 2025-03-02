@@ -1,5 +1,6 @@
 import { Config } from "../config.js";
 import { Ship } from "../components/Ship.js";
+import { LifeManager } from "../components/LifeManager.js";
 
 export const GameElements = {
   canvas: null,

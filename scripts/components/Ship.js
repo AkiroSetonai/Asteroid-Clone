@@ -1,6 +1,8 @@
 import { Config } from "../config.js";
 import { GameElements } from "../game/GameElements.js";
 import { BulletManager } from "./BulletManager.js";
+import { LifeManager } from "./LifeManager.js";
+import { AsteroidManager } from "./AsteroidManager.js";
 
 export const Ship = {
   instance: null,
@@ -20,6 +22,7 @@ export const Ship = {
       speed: 0.5,
       maxSpeed: 3,
       friction: 0.02,
+      isInvulnerable: false, // Inicializando invulnerabilidade
     };
     this.resetPosition(GameElements.canvas);
   },
@@ -28,6 +31,14 @@ export const Ship = {
     if (this.instance) {
       this.instance.x = canvas.width / 2;
       this.instance.y = canvas.height / 2;
+      this.instance.isInvulnerable = true;
+
+      setTimeout(() => {
+        this.instance.isInvulnerable = false;
+      }, 2000); // 2 segundos de invulnerabilidade
+
+      // Recria os asteroides
+      AsteroidManager.createInitialAsteroids();
     }
   },
 
@@ -46,6 +57,13 @@ export const Ship = {
   draw() {
     const ctx = GameElements.ctx;
     const s = this.instance;
+
+    if (LifeManager.isGameOver()) return; // Se o jogo acabou, não desenha a nave
+
+    // Efeito piscante durante a invulnerabilidade
+    if (s.isInvulnerable && Math.floor(Date.now() / 200) % 2 === 0) {
+      return; // Pisca a nave a cada 200ms
+    }
 
     ctx.strokeStyle = "#fff";
     ctx.lineWidth = 2;

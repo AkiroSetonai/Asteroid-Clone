@@ -5,6 +5,7 @@ import { AsteroidManager } from "../components/AsteroidManager.js";
 import { Config } from "../config.js";
 import { Helpers } from "../utils/helpers.js";
 import { ScoreManager } from "../components/ScoreManager.js";
+import { LifeManager } from "../components/LifeManager.js";
 
 function createFragment(parentAsteroid, newSize) {
   return {
@@ -26,10 +27,16 @@ export const GameSystem = {
     Ship.init();
     AsteroidManager.init();
     ScoreManager.init();
+    LifeManager.init();
     this.loop();
   },
 
   loop() {
+    if (LifeManager.isGameOver()) {
+      this.showGameOverScreen();
+      return;
+    }
+
     GameElements.ctx.fillStyle = Config.BACKGROUND;
     GameElements.ctx.fillRect(
       0,
@@ -58,16 +65,42 @@ export const GameSystem = {
 
     AsteroidManager.asteroids.forEach((asteroid) => {
       if (Helpers.checkCollision(Ship.instance, asteroid)) {
-        console.log("Colisão da nave com um asteroide!");
+        LifeManager.loseLife();
+        Ship.resetPosition(GameElements.canvas);
       }
     });
 
     ScoreManager.draw();
+    LifeManager.draw();
+
     Ship.update();
     Ship.draw();
     BulletManager.update();
     AsteroidManager.update();
 
     requestAnimationFrame(() => this.loop());
+  },
+
+  showGameOverScreen() {
+    const ctx = GameElements.ctx;
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 0, GameElements.canvas.width, GameElements.canvas.height);
+
+    ctx.fillStyle = "#ff0000";
+    ctx.font = Config.GAME_OVER_FONT;
+    ctx.textAlign = "center";
+    ctx.fillText(
+      "GAME OVER",
+      GameElements.canvas.width / 2,
+      GameElements.canvas.height / 2
+    );
+
+    ctx.font = "30px Arial";
+    ctx.fillText(
+      `Pontuação: ${ScoreManager.score}`,
+      GameElements.canvas.width / 2,
+      GameElements.canvas.height / 2 + 50
+    );
   },
 };

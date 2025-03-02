@@ -16,6 +16,6 @@ export const ScoreManager = {
     ctx.fillStyle = "#fff";
     ctx.font = "20px Arial";
     ctx.textAlign = "left";
-    ctx.fillText(`Points: ${this.score}`, 20, 30);
+    ctx.fillText(`Score: ${this.score}`, 20, 30);
   },
 };
